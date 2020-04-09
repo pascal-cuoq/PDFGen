@@ -357,11 +357,12 @@ static ssize_t dstr_ensure(struct dstr *str, size_t len)
         size_t new_len;
 
         new_len = len + 4096;
+        int was_null = !str->data;
         new_data = realloc(str->data, new_len);
         if (!new_data)
             return -ENOMEM;
         // If we move beyond the on-stack buffer, copy the old data out
-        if (!str->data && str->used_len > 0)
+        if (was_null && str->used_len > 0)
             memcpy(new_data, str->static_data, str->used_len + 1);
         str->data = new_data;
         str->alloc_len = new_len;
